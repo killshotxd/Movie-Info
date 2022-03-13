@@ -1,7 +1,7 @@
 const fetchData = async (searchTerm) => {
   const response = await axios.get("http://www.omdbapi.com/", {
     params: {
-      apikey: "3fb94382",
+      apikey: "d9835cc5",
       s: searchTerm,
     },
   });
@@ -15,30 +15,35 @@ const fetchData = async (searchTerm) => {
 
 const root = document.querySelector(".autocomplete");
 root.innerHTML = `
-<label><b>Search For a Movie</b></label>
-<input class="input" />
-<div class="dropdown is-active">
-  <div class = "dropdown-menu">
-    <div class="dropdown-content results"> </div>
+  <label><b>Search For a Movie</b></label>
+  <input class="input" />
+  <div class="dropdown">
+    <div class="dropdown-menu">
+      <div class="dropdown-content results"></div>
+    </div>
   </div>
-</div>
 `;
 
 const input = document.querySelector("input");
 const dropdown = document.querySelector(".dropdown");
-const resulsWrapper = document.querySelector(".results");
+const resultsWrapper = document.querySelector(".results");
 
-const onInput = async (e) => {
-  const movies = await fetchData(e.target.value);
+const onInput = async (event) => {
+  const movies = await fetchData(event.target.value);
+
+  resultsWrapper.innerHTML = "";
+  dropdown.classList.add("is-active");
   for (let movie of movies) {
-    const div = document.createElement("div");
+    const option = document.createElement("a");
+    const imgSrc = movie.Poster === "N/A" ? "" : movie.Poster;
 
-    div.innerHTML = `
-    <img src="${movie.Poster}" />
-    <h1>${movie.Title}</h1>
+    option.classList.add("dropdown-item");
+    option.innerHTML = `
+      <img src="${imgSrc}" />
+      ${movie.Title}
     `;
 
-    document.querySelector("#target").appendChild(div);
+    resultsWrapper.appendChild(option);
   }
 };
 input.addEventListener("input", debounce(onInput, 500));
