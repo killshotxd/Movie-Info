@@ -1,6 +1,6 @@
 const autoCompleteConfig = {
   renderOption(movie) {
-    const imgSrc = movie.Poster === 'N/A' ? '' : movie.Poster;
+    const imgSrc = movie.Poster === "N/A" ? "" : movie.Poster;
     return `
       <img src="${imgSrc}" />
       ${movie.Title} (${movie.Year})
@@ -10,11 +10,11 @@ const autoCompleteConfig = {
     return movie.Title;
   },
   async fetchData(searchTerm) {
-    const response = await axios.get('http://www.omdbapi.com/', {
+    const response = await axios.get("https://www.omdbapi.com/", {
       params: {
-        apikey: 'd9835cc5',
-        s: searchTerm
-      }
+        apikey: "3fb94382",
+        s: searchTerm,
+      },
     });
 
     if (response.data.Error) {
@@ -22,38 +22,53 @@ const autoCompleteConfig = {
     }
 
     return response.data.Search;
-  }
+  },
 };
 
 createAutoComplete({
   ...autoCompleteConfig,
-  root: document.querySelector('#left-autocomplete'),
+  root: document.querySelector("#left-autocomplete"),
   onOptionSelect(movie) {
-    document.querySelector('.tutorial').classList.add('is-hidden');
-    onMovieSelect(movie, document.querySelector('#left-summary'));
-  }
+    document.querySelector(".tutorial").classList.add("is-hidden");
+    onMovieSelect(movie, document.querySelector("#left-summary"), "left");
+  },
 });
 createAutoComplete({
   ...autoCompleteConfig,
-  root: document.querySelector('#right-autocomplete'),
+  root: document.querySelector("#right-autocomplete"),
   onOptionSelect(movie) {
-    document.querySelector('.tutorial').classList.add('is-hidden');
-    onMovieSelect(movie, document.querySelector('#right-summary'));
-  }
+    document.querySelector(".tutorial").classList.add("is-hidden");
+    onMovieSelect(movie, document.querySelector("#right-summary"), "right");
+  },
 });
 
-const onMovieSelect = async (movie, summaryElement) => {
-  const response = await axios.get('http://www.omdbapi.com/', {
+let leftMovie;
+let rightMovie;
+
+const onMovieSelect = async (movie, summaryElement, side) => {
+  const response = await axios.get("https://www.omdbapi.com/", {
     params: {
-      apikey: 'd9835cc5',
-      i: movie.imdbID
-    }
+      apikey: "3fb94382",
+      i: movie.imdbID,
+    },
   });
 
   summaryElement.innerHTML = movieTemplate(response.data);
+
+  if (side === "left") {
+    leftMovie = response.data;
+  } else {
+    rightMovie = response.data;
+  }
+
+  if (leftMovie && rightMovie) {
+    runComparison();
+  }
 };
 
-const movieTemplate = movieDetail => {
+const runComparison = () => {};
+
+const movieTemplate = (movieDetail) => {
   return `
     <article class="media">
       <figure class="media-left">
